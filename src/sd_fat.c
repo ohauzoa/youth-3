@@ -1,5 +1,8 @@
 #include "sd_fat.h"
 
+//#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
+//#include "esp_log.h"
+
 static const char *TAG = "TF_card";
 static const char mount_point[] = MOUNT_POINT;
 
@@ -22,7 +25,7 @@ esp_err_t sd_card_init(void)
         .max_files = 5,
     };
 
-    printf("Initializing SD Card\n");
+    ESP_LOGI(TAG, "Initializing SD Card\n");
 
     sdmmc_host_t host = SDSPI_HOST_DEFAULT();
     host.slot = VSPI_HOST;
@@ -39,10 +42,10 @@ esp_err_t sd_card_init(void)
     ret = spi_bus_initialize(host.slot, &bus_config, host.slot);
     if(ret != ESP_OK)
     {
-        printf("Failed to initialize bus.\n");
+        ESP_LOGI(TAG, "Failed to initialize bus.\n");
         return ret;
     }
-    printf("host slot (SPI%d)\n", host.slot);
+    ESP_LOGI(TAG, "host slot (SPI%d)\n", host.slot);
 
     sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
     slot_config.gpio_cs = PIN_NUM_CS;
@@ -54,19 +57,20 @@ esp_err_t sd_card_init(void)
     {
         if(ret == ESP_FAIL)
         {
-            printf("Failed to mount filesystem.\n");
-            printf("If you want to card to be formatted, \n");
-            printf("set the EXAMOLE_FORMAT_IF_MOUNT_FAILERD menuconfig option.\n");
+            ESP_LOGI(TAG, "Failed to mount filesystem.\n"
+            "If you want to card to be formatted, set the EXAMOLE_FORMAT_IF_MOUNT_FAILERD menuconfig option.\n");
         }
         else
         {
-            printf("Failed to initialize the card (%s). Make sure SD card line have pull-up resistors in place.",
-            esp_err_to_name(ret));
+            ESP_LOGI(TAG, "Failed to initialize the card (%s)."
+            "Make sure SD card line have pull-up resistors in place.", esp_err_to_name(ret));
         }
 
         return ESP_FAIL;
     }
 
+    ESP_LOGI(TAG, "Filesystem mounted");
+    
     sdmmc_card_print_info(stdout, card);
 
     return ESP_OK;

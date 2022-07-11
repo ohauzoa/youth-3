@@ -1,12 +1,11 @@
-#ifndef __MAIN_tt_H
-#define __MAIN_tt_H
+#ifndef __CONSOLE_H
+#define __CONSOLE_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-char UartGet(void);
-
+void console_init();
 
 #ifdef __cplusplus
 } /* extern "C" */
